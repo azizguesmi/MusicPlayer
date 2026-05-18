@@ -3,7 +3,9 @@ package ui
 import (
 	"MuisicPlayer/Model"
 	"MuisicPlayer/persistent"
+	"bufio"
 	"fmt"
+	"os"
 	"strings"
 )
 
@@ -70,5 +72,27 @@ func (u *Ui) ViewPlayListBySeach(search string) {
 		}
 	}
 } 
+
+func (u *Ui)Run() {
+	fmt.Println("type [p] to see playLists")
+	fmt.Println("type [s] to see songs")
+
+	sc := bufio.NewScanner(os.Stdin)
+	sc.Scan()
+
+	choice := sc.Text()
+	for choice != "p" && choice != "s" {
+		fmt.Println("wrong choice")
+		sc.Scan()
+		choice = sc.Text()
+	}
+
+	switch choice {
+		case "p" :
+			u.ViewAllPlayList()
+		case "s" :
+			u.ViewAllSongs()
+	}
+}
 
 
