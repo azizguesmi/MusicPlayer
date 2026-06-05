@@ -5,7 +5,6 @@ import (
 	"MuisicPlayer/persistent"
 	"MuisicPlayer/player"
 	"fmt"
-	"os"
 
 	tea "github.com/charmbracelet/bubbletea"
 )
@@ -101,16 +100,4 @@ func (m songModel) View() string {
 
 	s += "press q to quit \n"
 	return s
-}
-
-func Run() {
-	m, err := createSongModel(nil)
-	if err != nil {
-		fmt.Println("error %v", err)
-	}
-	p := tea.NewProgram(*m)
-	if _, err := p.Run(); err != nil {
-		fmt.Println("error %v", err)
-		os.Exit(1)
-	}
 }
