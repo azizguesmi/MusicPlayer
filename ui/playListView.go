@@ -49,7 +49,7 @@ func (m playListModle) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			_, ok := m.selected[m.cursor]
 			if ok {
 				delete(m.selected, m.cursor)
-			} else if len(m.selected) == 0 {
+			} else {
 				m.selected[m.cursor] = struct{}{}
 			}
 		case "d":
@@ -76,7 +76,7 @@ func (m playListModle) View() string {
 			checked = "X"
 		}
 
-		s += fmt.Sprintf("%s [%s] %S\n", cursor, checked, playlist.Name)
+		s += fmt.Sprintf("%s [%s] %s\n", cursor, checked, playlist.Name)
 	}
 
 	s += "press q to quit \n"
