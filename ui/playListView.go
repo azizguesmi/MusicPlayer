@@ -12,6 +12,7 @@ type playListModle struct {
 	PlayLists []model.PlayList
 	cursor    int
 	selected  map[int]struct{}
+	message   string
 }
 
 func createPlayListModel() (*playListModle, error) {
@@ -54,8 +55,11 @@ func (m playListModle) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		case "d":
 			for i := range m.selected {
-				persistent.DeletePlayList(m.PlayLists[i].Name)
+				if i >= 0 && i < len(m.PlayLists) {
+					persistent.DeletePlayList(m.PlayLists[i].Name)
+				}
 			}
+			m.message = "deleted selected playlists"
 		}
 	}
 	return m, nil
@@ -79,7 +83,7 @@ func (m playListModle) View() string {
 		s += fmt.Sprintf("%s [%s] %s\n", cursor, checked, playlist.Name)
 	}
 
-	s += "press q to quit \n"
+	s += "press q to quit \n " + m.message
 
 	return s
 }

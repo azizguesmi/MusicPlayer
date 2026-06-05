@@ -114,6 +114,9 @@ func AddPlayList(playList model.PlayList) error {
 		if err.Error() == "playlist not found" {
 
 			t, err := GetAllPlayLists()
+			if err != nil {
+				return err
+			}
 			t = append(t, playList)
 			t_json, err := json.MarshalIndent(t, "", " ")
 			if err != nil {
@@ -133,11 +136,11 @@ func DeletePlayList(name string) error {
 	playLists, err := GetAllPlayLists()
 
 	if err != nil {
-		return err
+		return errors.New("error getting play lists in the deleting procces")
 	}
 	for i, p := range playLists {
 		if p.Name == name {
-			playLists = append(playLists[:i-1], playLists[i+1:]...)
+			playLists = append(playLists[:i], playLists[i+1:]...)
 			break
 		}
 	}

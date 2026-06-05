@@ -12,6 +12,7 @@ type CreatePlayListModel struct {
 	songs    []model.Song
 	selected map[int]struct{}
 	cursor   int
+	message  string
 }
 
 func NewCreatePlayListModel(name string) (*CreatePlayListModel, error) {
@@ -35,7 +36,7 @@ func (m *CreatePlayListModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "q", "ctrl+c":
-			return nil, tea.Quit
+			return m, tea.Quit
 		case "enter":
 			_, ok := m.selected[m.cursor]
 			if ok {
@@ -59,9 +60,11 @@ func (m *CreatePlayListModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			playlist := model.PlayList{Name: m.name, Songs: sel}
 			err := persistent.AddPlayList(playlist)
 			if err != nil {
-				return nil, tea.Quit
+				m.message = "error adding playlist: "
+				return m, nil
 			}
-			return nil, tea.Quit
+			m.message = "Playlist added successfully"
+			return m, nil
 		}
 	}
 	return m, nil
@@ -80,6 +83,9 @@ func (m *CreatePlayListModel) View() string {
 			cursor = ">"
 		}
 		s += selected + cursor + " " + song.Title + " - " + song.Artist + "\n"
+	}
+	if m.message != "" {
+		s += "\n" + m.message
 	}
 	return s
 }
