@@ -3,6 +3,7 @@ package player
 import (
 	"errors"
 	"os"
+	"time"
 
 	"github.com/faiface/beep"
 	"github.com/faiface/beep/mp3"
@@ -10,11 +11,11 @@ import (
 )
 
 type Player struct {
-	file *os.File
-	done chan bool
-	Ctrl *beep.Ctrl
+	file     *os.File
+	done     chan bool
+	Ctrl     *beep.Ctrl
 	Streamer beep.StreamSeekCloser
-	Format beep.Format
+	Format   beep.Format
 }
 
 // create a new Player
@@ -24,28 +25,28 @@ func NewPlaeyr(f string) (*Player, error) {
 		return nil, errors.New("error reading the file")
 	}
 	streamer, format, err := mp3.Decode(file)
+	InitSpeaker(format.SampleRate)
 	if err != nil {
 		return nil, errors.New("error creating the stream")
 	}
 	c := beep.Ctrl{Streamer: streamer}
 	return &Player{
-		file: file,
+		file:     file,
 		Streamer: streamer,
-		Format: format,
-		Ctrl: &c,
-		done: make(chan bool, 1),
+		Format:   format,
+		Ctrl:     &c,
+		done:     make(chan bool, 1),
 	}, nil
 }
 
-// Play the truck
 func (p *Player) Play() error {
 	p.Ctrl.Paused = false
-	speaker.Play(beep.Seq(p.Ctrl, beep.Callback(func() {p.done <- true})))
+	speaker.Play(beep.Seq(p.Ctrl, beep.Callback(func() { p.done <- true })))
 	return nil
 }
 
 // pause the truck
-func(p *Player) Pause (){
+func (p *Player) Pause() {
 	speaker.Lock()
 	defer speaker.Unlock()
 	p.Ctrl.Paused = true
@@ -58,7 +59,7 @@ func (p *Player) Resume() {
 	p.Ctrl.Paused = false
 }
 
-func (p *Player) Wait ()  {
+func (p *Player) Wait() {
 	<-p.done
 }
 
@@ -67,7 +68,10 @@ func (p *Player) Close() {
 	p.file.Close()
 }
 
+// player.go — remove speaker.Init from NewPlayer, add a separate Init func
+func InitSpeaker(sampleRate beep.SampleRate) error {
+	return speaker.Init(sampleRate, sampleRate.N(time.Second/10))
+}
 
-
-
-
+// Then in NewPlayer, just decode and return — don't init speaker
+// In ui.go, call player.InitSpeaker once with the first song's format before playing

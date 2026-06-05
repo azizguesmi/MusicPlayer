@@ -1,11 +1,13 @@
 package ui
 
 import (
-	"MuisicPlayer/Model"
+	model "MuisicPlayer/Model"
 	"MuisicPlayer/persistent"
+	"MuisicPlayer/player"
 	"bufio"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -13,9 +15,9 @@ type View interface {
 	ViewSong()
 	ViewAllSong()
 }
-type Ui struct{
-
+type Ui struct {
 }
+
 func (u *Ui) ViewSong(s model.Song) {
 	fmt.Printf("Title : %s | Artist | %s | %s\n", s.Title, s.Artist, s.Lenght)
 }
@@ -26,7 +28,7 @@ func (u *Ui) ViewAllSongs() {
 		fmt.Println(err)
 	}
 	fmt.Println("      Title      |      Artist      |     Time      ")
-	for _,s := range t {
+	for _, s := range t {
 		u.ViewSong(s)
 	}
 }
@@ -44,7 +46,7 @@ func (u *Ui) ViewAllPlayList() {
 	fmt.Println("------PlayLists------")
 	fmt.Println("      Title      ")
 
-	for _,p := range t {
+	for _, p := range t {
 		u.ViewPlayList(p)
 	}
 }
@@ -54,26 +56,27 @@ func (u *Ui) ViewSongsBySearch(search string) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	for _,s := range t {
+	for _, s := range t {
 		if strings.Contains(s.Title, search) {
 			u.ViewSong(s)
 		}
 	}
-} 
+}
 
 func (u *Ui) ViewPlayListBySeach(search string) {
 	t, err := persistent.GetAllPlayLists()
 	if err != nil {
 		fmt.Println(err)
 	}
-	for _,s := range t {
+	for _, s := range t {
 		if strings.Contains(s.Name, search) {
 			u.ViewPlayList(s)
 		}
 	}
-} 
+}
 
-func (u *Ui)Run() {
+func (u *Ui) Run() {
+
 	fmt.Println("type [p] to see playLists")
 	fmt.Println("type [s] to see songs")
 
@@ -88,11 +91,18 @@ func (u *Ui)Run() {
 	}
 
 	switch choice {
-		case "p" :
-			u.ViewAllPlayList()
-		case "s" :
-			u.ViewAllSongs()
+	case "p":
+		u.ViewAllPlayList()
+	case "s":
+		u.ViewAllSongs()
+		s, err := persistent.GetAllSongs()
+		sc.Scan()
+		c := sc.Text()
+		ss, err := strconv.Atoi(c)
+		if err != nil {
+			fmt.Println("error typing the choice")
+		}
+		p, err := player.NewPlaeyr(s[ss].Path)
+		p.Play()
 	}
 }
-
-
