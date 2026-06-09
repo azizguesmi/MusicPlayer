@@ -72,11 +72,7 @@ func (m songModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				if err != nil {
 					return m, nil
 				}
-				go func() {
-					p.Play()
-					p.Wait()
-					p.Close()
-				}()
+				go p.LaunchSong()
 			}
 		}
 	}

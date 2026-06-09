@@ -2,10 +2,14 @@ package main
 
 import (
 	"MuisicPlayer/ui"
+	"fmt"
 	"os"
 )
 
 func main() {
 	args := os.Args[1:]
-	ui.Run(args)
+	err := ui.Run(args)
+	if err != nil {
+		fmt.Println(err)
+	}
 }

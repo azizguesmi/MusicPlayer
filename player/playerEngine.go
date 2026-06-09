@@ -52,6 +52,10 @@ func (p *Player) Pause() {
 	p.Ctrl.Paused = true
 }
 
+func (p *Player) IsPaused() bool {
+	return p.Ctrl.Paused
+}
+
 // resume the truck
 func (p *Player) Resume() {
 	speaker.Lock()
@@ -68,10 +72,22 @@ func (p *Player) Close() {
 	p.file.Close()
 }
 
-// player.go — remove speaker.Init from NewPlayer, add a separate Init func
 func InitSpeaker(sampleRate beep.SampleRate) error {
 	return speaker.Init(sampleRate, sampleRate.N(time.Second/10))
 }
 
-// Then in NewPlayer, just decode and return — don't init speaker
-// In ui.go, call player.InitSpeaker once with the first song's format before playing
+func (p *Player) LaunchSong() {
+	p.Play()
+	p.Wait()
+	p.Close()
+}
+
+func (p *Player) IsClosed() bool {
+
+	select {
+	case <-p.done:
+		return true
+	default:
+		return false
+	}
+}

@@ -156,3 +156,16 @@ func DeletePlayList(name string) error {
 	}
 	return nil
 }
+
+func GetPlayListByName(name string) (*model.PlayList, error) {
+	t, err := GetAllPlayLists()
+	if err != nil {
+		return nil, err
+	}
+	for _, p := range t {
+		if p.Name == name {
+			return &p, nil
+		}
+	}
+	return nil, errors.New("playlist not found")
+}

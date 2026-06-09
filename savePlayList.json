@@ -9,5 +9,33 @@
     "lenght": "232"
    }
   ]
+ },
+ {
+  "Name": "pp",
+  "Songs": [
+   {
+    "path": "ex.mp3",
+    "title": "song",
+    "artist": "ar",
+    "lenght": "23"
+   },
+   {
+    "path": "ex2.mp3",
+    "title": "song2",
+    "artist": "ar2",
+    "lenght": "232"
+   }
+  ]
+ },
+ {
+  "Name": "ppop",
+  "Songs": [
+   {
+    "path": "ex.mp3",
+    "title": "song",
+    "artist": "ar",
+    "lenght": "23"
+   }
+  ]
  }
 ]

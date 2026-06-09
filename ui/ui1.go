@@ -7,47 +7,50 @@ import (
 )
 
 func Run(args []string) error {
-
 	if len(args) == 0 {
 		return errors.New("invalid args")
 	}
 
-	if args[0] == "-s" {
-		model, err := createSongModel(nil)
+	switch args[0] {
+
+	case "-s":
+		m, err := createSongModel(nil)
 		if err != nil {
 			return err
 		}
-		_, err = tea.NewProgram(model).Run()
+		_, err = tea.NewProgram(m).Run()
+		return err
+
+	case "-p":
+		m, err := createPlayListModel()
 		if err != nil {
 			return err
 		}
+		_, err = tea.NewProgram(m).Run()
+		return err
+
+	case "-create":
+		if len(args) < 2 {
+			return errors.New("missing playlist name")
+		}
+		m, err := NewCreatePlayListModel(args[1])
+		if err != nil {
+			return err
+		}
+		_, err = tea.NewProgram(m).Run()
+		return err
+
+	case "-pl":
+		if len(args) < 2 {
+			return errors.New("missing playlist name")
+		}
+		m, err := NewPlayListPlay(args[1])
+		if err != nil {
+			return err
+		}
+		_, err = tea.NewProgram(m).Run()
+		return err
 	}
 
-	if args[0] == "-p" {
-		model, err := createPlayListModel()
-		if err != nil {
-			return err
-		}
-		_, err = tea.NewProgram(model).Run()
-		if err != nil {
-			return err
-		}
-	}
-
-	if args[0] == "-play" && args[1] != "" {
-		//player view
-	}
-
-	if args[0] == "-create" && args[1] != "" {
-		model, err := NewCreatePlayListModel(args[1])
-		if err != nil {
-			return err
-		}
-		_, err = tea.NewProgram(model).Run()
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
+	return errors.New("unknown command")
 }
